@@ -1,8 +1,21 @@
-pub fn search_pattern<'a>(pattern: &str, haystack: &'a str) -> Vec<&'a str> {
+use std::path::{PathBuf};
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(version, about)]
+pub struct Cli {
+    /// pattern to search for
+    pub pattern: String,
+    /// file to search in
+    pub path: PathBuf
+}
+
+pub fn search_pattern<'a>(pattern: &str, haystack: &'a str) -> Vec<(usize, &'a str)> {
     let mut result = Vec::new();
-    for line in haystack.lines() {
+    for (i, line) in haystack.lines().enumerate() {
         if contains_naive(pattern, line) {
-            result.push(line);
+            let i = i + 1; 
+            result.push((i, line));
         }
     }
 
@@ -38,37 +51,37 @@ fox fox fox
 ";
     #[test]
     fn empty_haystack() {
-        let expected = Vec::<&str>::new();
+        let expected = Vec::<(usize, &str)>::new();
         assert_eq!(search_pattern("fox", " "), expected);
     }
 
     #[test]
     fn truly_empty_haystack() {
-        let expected = Vec::<&str>::new();
+        let expected = Vec::<(usize, &str)>::new();
         assert_eq!(search_pattern("fox", ""), expected);
     }
 
     #[test]
     fn empty_pattern() {
         let expected = vec![
-            "the quick brown fox",
-            "jumps over the lazy dog",
-            "The Quick Brown Fox",
-            "a line with no animals at all",
-            "fox fox fox",
+            (1, "the quick brown fox"),
+            (2, "jumps over the lazy dog"),
+            (3, "The Quick Brown Fox"),
+            (4, "a line with no animals at all"),
+            (5, "fox fox fox"),
         ];
         assert_eq!(search_pattern("", SAMPLE), expected);
     }
 
     #[test]
     fn find_pattern() {
-        let expected = vec!["the quick brown fox", "fox fox fox"];
+        let expected = vec![(1, "the quick brown fox"), (5, "fox fox fox")];
         assert_eq!(search_pattern("fox", SAMPLE), expected);
     }
 
     #[test]
     fn longer_pattern() {
-        let expected = Vec::<&str>::new();
+        let expected = Vec::<(usize, &str)>::new();
         assert_eq!(search_pattern("elephantine", "fox"), expected);
     }
 }
