@@ -1,11 +1,3 @@
-const SAMPLE: &str = "\
-the quick brown fox
-jumps over the lazy dog
-The Quick Brown Fox
-a line with no animals at all
-fox fox fox
-";
-
 pub fn search_pattern<'a>(pattern: &str, haystack: &'a str) -> Vec<&'a str> {
     let mut result = Vec::new();
     for line in haystack.lines() {
@@ -26,7 +18,9 @@ fn contains_naive(pattern: &str, haystack: &str) -> bool {
     }
 
     for i in 0..=(h.len() - p.len()) {
-        // todo!("compare the m bytes at position i against p; return true if equal")
+        if &h[i..i + p.len()] == p {
+            return true;
+        }
     }
 
     false
@@ -35,41 +29,46 @@ fn contains_naive(pattern: &str, haystack: &str) -> bool {
 mod tests {
     use super::*;
 
+    const SAMPLE: &str = "\
+the quick brown fox
+jumps over the lazy dog
+The Quick Brown Fox
+a line with no animals at all
+fox fox fox
+";
     #[test]
     fn empty_haystack() {
-       let expected = Vec::<&str>::new();
-       assert_eq!(search_pattern("fox", " "), expected);
+        let expected = Vec::<&str>::new();
+        assert_eq!(search_pattern("fox", " "), expected);
     }
 
     #[test]
     fn truly_empty_haystack() {
-       let expected = Vec::<&str>::new();
-       assert_eq!(search_pattern("fox", ""), expected);
+        let expected = Vec::<&str>::new();
+        assert_eq!(search_pattern("fox", ""), expected);
     }
-    
+
     #[test]
     fn empty_pattern() {
-       let mut expected = Vec::<&str>::new();
-       expected.push("the quick brown fox");
-       expected.push("jumps over the lazy dog");
-       expected.push("The Quick Brown Fox");
-       expected.push("a line with no animals at all");
-       expected.push("fox fox fox");
-
-       assert_eq!(search_pattern("", SAMPLE), expected);
+        let expected = vec![
+            "the quick brown fox",
+            "jumps over the lazy dog",
+            "The Quick Brown Fox",
+            "a line with no animals at all",
+            "fox fox fox",
+        ];
+        assert_eq!(search_pattern("", SAMPLE), expected);
     }
 
     #[test]
     fn find_pattern() {
-       let mut expected = Vec::<&str>::new();
-       expected.push("the quick brown fox");
-       expected.push("fox fox fox");
-       assert_eq!(search_pattern("fox", SAMPLE), expected);
+        let expected = vec!["the quick brown fox", "fox fox fox"];
+        assert_eq!(search_pattern("fox", SAMPLE), expected);
     }
 
     #[test]
     fn longer_pattern() {
-       let expected = Vec::<&str>::new();
-       assert_eq!(search_pattern("elephantine", "fox"), expected);
+        let expected = Vec::<&str>::new();
+        assert_eq!(search_pattern("elephantine", "fox"), expected);
     }
 }
