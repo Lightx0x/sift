@@ -1,5 +1,5 @@
-use std::path::{PathBuf};
 use clap::Parser;
+use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(version, about)]
@@ -7,14 +7,14 @@ pub struct Cli {
     /// pattern to search for
     pub pattern: String,
     /// file to search in
-    pub path: PathBuf
+    pub path: PathBuf,
 }
 
 pub fn search_pattern<'a>(pattern: &str, haystack: &'a str) -> Vec<(usize, &'a str)> {
     let mut result = Vec::new();
     for (i, line) in haystack.lines().enumerate() {
         if contains_naive(pattern, line) {
-            let i = i + 1; 
+            let i = i + 1;
             result.push((i, line));
         }
     }
